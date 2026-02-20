@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-v79e#y#&^wqg2g4hz-1xq-t=s0%8tqj733aoo2m4=e#b3rhd4i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.9']
 
 
 # Application definition
@@ -150,7 +150,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.1.9']
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -174,5 +173,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'Media/')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ALLOW_ALL_ORIGINS: True
+CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'library_app.CustomUser'

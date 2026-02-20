@@ -7,42 +7,41 @@ class SecondScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final imageHeight = size.height * 0.38;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 30.0,
-                top: 65.0,
+            SizedBox(
+              height: imageHeight,
+              child: Image.asset(
+                'assets/Guided.png',
+                fit: BoxFit.contain,
               ),
-              child: Image.asset('assets/Guided.png'),
             ),
             const SizedBox(
-              height: 10.0,
+              height: 16.0,
             ),
             Text(
               'Guided',
+              textAlign: TextAlign.center,
               style: GoogleFonts.delius(
                 fontWeight: FontWeight.bold,
                 fontSize: 30.0,
               ),
             ),
             const SizedBox(
-              height: 10.0,
+              height: 12.0,
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-                right: 10.0,
-              ),
-              child: Text(
-                'Explore our platform with confidence through guided tours that help you navigate and utilize every feature effectively.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.delius(
-                  fontSize: 17.0,
-                ),
+            Text(
+              'Explore our platform with confidence through guided tours that help you navigate and utilize every feature effectively.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.delius(
+                fontSize: 17.0,
               ),
             )
           ],

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import '../../utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,13 +45,13 @@ class UserController extends StateNotifier<User> {
     request.fields['email'] = state.email;
     request.fields['password'] = state.password;
 
-    if (state.profileImage != null) {
-      final file = await http.MultipartFile.fromPath(
-          'profile_image ', state.profileImage!.path);
+    final profileImage = state.profileImage;
+    if (profileImage != null) {
+      final file =
+          await http.MultipartFile.fromPath('profile_image', profileImage.path);
       request.files.add(file);
     }
 
-    print(state.profileImage!.path);
     final response = await request.send();
     print(response.statusCode);
     if (response.statusCode == 201) {
@@ -65,7 +64,7 @@ class UserController extends StateNotifier<User> {
   Future<bool> authenticateUser() async {
     // Check if the Token is already in the user device before going to the server side
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('accessx')) {
+    if (prefs.containsKey('access')) {
       return true; // the user has already the token key in his device in this case.
     } else {
       final response = await http.post(

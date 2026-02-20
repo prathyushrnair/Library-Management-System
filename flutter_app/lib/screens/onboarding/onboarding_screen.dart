@@ -17,7 +17,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -42,10 +41,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             Container(
               color: Colors.white,
               height: 13.0,
-              width: size.width,
-              margin: EdgeInsets.only(
-                  left: (size.width / 2) - 55, right: 120, bottom: 10.0),
+              margin: const EdgeInsets.only(bottom: 10.0),
+              alignment: Alignment.center,
               child: ListView.builder(
+                  shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: 3,
                   itemBuilder: (BuildContext context, int index) {
@@ -63,9 +62,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   }),
             ),
             SizedBox(
-              height: 140,
-              width: size.width,
-              child: GetStartedButton(),
+              height: 120,
+              child: const GetStartedButton(),
             ),
           ],
         ),

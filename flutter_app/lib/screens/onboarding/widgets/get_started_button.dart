@@ -11,7 +11,7 @@ class GetStartedButton extends StatefulWidget {
 }
 
 class _GetStartedButtonState extends State<GetStartedButton> {
-  late Artboard? _catButtonArtBoard;
+  Artboard? _catButtonArtBoard;
   SMIInput<bool>? _clickInput;
   SMIInput<bool>? _hoverInput;
 
@@ -57,16 +57,27 @@ class _GetStartedButtonState extends State<GetStartedButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (_catButtonArtBoard == null) {
+      return const Center(
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final artboard = _catButtonArtBoard!;
     _hoverInput?.value = true;
-    return SizedBox(
-      width: 300,
-      height: 300,
-      child: GestureDetector(
-        onTapDown: _onTapDown,
-        onTapUp: _onTapUp,
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      child: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
         child: Rive(
-          artboard: _catButtonArtBoard!,
-          fit: BoxFit.cover,
+          artboard: artboard,
+          fit: BoxFit.contain,
         ),
       ),
     );

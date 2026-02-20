@@ -31,6 +31,11 @@ class UserProfile extends ConsumerWidget {
             );
           },
           data: (snapshot) {
+            final rawProfileImage = snapshot['profile_image'];
+            final profileImage = rawProfileImage?.toString();
+            final hasProfileImage = profileImage != null &&
+                profileImage.isNotEmpty &&
+                profileImage != 'null';
             return Scaffold(
               body: SafeArea(
                 child: SingleChildScrollView(
@@ -77,8 +82,12 @@ class UserProfile extends ConsumerWidget {
                               children: [
                                 CircleAvatar(
                                   backgroundColor: Colors.amber.shade700,
-                                  backgroundImage: NetworkImage(
-                                      '$baseUrl${snapshot['profile_image']}'),
+                                  backgroundImage: hasProfileImage
+                                      ? NetworkImage('$baseUrl$profileImage')
+                                      : null,
+                                  child: hasProfileImage
+                                      ? null
+                                      : const Icon(Icons.person),
                                 ),
                                 const SizedBox(width: 10.0)
                               ],
@@ -92,8 +101,12 @@ class UserProfile extends ConsumerWidget {
                           children: [
                             CircleAvatar(
                               radius: 50.0,
-                              backgroundImage: NetworkImage(
-                                  '$baseUrl${snapshot['profile_image']}'),
+                              backgroundImage: hasProfileImage
+                                  ? NetworkImage('$baseUrl$profileImage')
+                                  : null,
+                              child: hasProfileImage
+                                  ? null
+                                  : const Icon(Icons.person),
                             ),
                             const SizedBox(
                               width: 10.0,

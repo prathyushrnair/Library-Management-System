@@ -29,6 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           error: (err, stack) => Text('Error: $err'),
           data: (userData) {
+            final rawProfileImage = userData['profile_image'];
+            final profileImage = rawProfileImage?.toString();
+            final hasProfileImage = profileImage != null &&
+                profileImage.isNotEmpty &&
+                profileImage != 'null';
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
@@ -68,8 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             CircleAvatar(
                               radius: 26,
-                              backgroundImage: NetworkImage(
-                                  "$baseUrl${userData['profile_image']}"),
+                              backgroundImage: hasProfileImage
+                                  ? NetworkImage("$baseUrl$profileImage")
+                                  : null,
+                              child: hasProfileImage
+                                  ? null
+                                  : const Icon(Icons.person),
                             )
                           ],
                         ),
