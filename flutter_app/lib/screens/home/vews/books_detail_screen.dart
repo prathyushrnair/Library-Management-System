@@ -351,6 +351,10 @@ class BookDetailPage extends ConsumerWidget {
                               .borrowBook(book.id)
                               .then(
                             (value) {
+                              if (value.contains('complete')) {
+                                ref.invalidate(bookDataProvider);
+                                ref.invalidate(borrowedBookDataProvider);
+                              }
                               showAlertDialog(context, value);
                             },
                           );
