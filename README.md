@@ -11,8 +11,7 @@ Welcome to መድብለ-አምባ, our library management system project! This p
 │   ├── lib/
 │   │   ├── main.dart
 │   │   ├── ...
-│   ├── android/
-│   ├── ios/
+│   ├── web/
 │   ├── ...
 ├── django_backend/
 │   ├── library_project/ 
@@ -37,7 +36,7 @@ Welcome to መድብለ-አምባ, our library management system project! This p
 │   ├── requirements.txt (Python Dependency List)
 ```
 
-- **`flutter_app/`**: This directory houses the source code for our Flutter mobile app. Explore the `lib/` folder for app logic and the `android/` and `ios/` folders for platform-specific code.
+- **`flutter_app/`**: This directory houses the source code for our Flutter web app. Explore `lib/` for app logic and `web/` for browser hosting files.
 
 - **`django_backend/`**: In this directory, you'll find the Django rest api that powers our library management system. 
 
@@ -62,10 +61,10 @@ To get up and running with our library management system, follow these steps:
    python manage.py runserver
    ```
 
-4. **Run the Flutter App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch the Flutter app on an emulator or device:
+4. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
 
    ```bash
-   flutter run
+   flutter run -d chrome
    ```
 <br></br>
 ## Contributors
@@ -105,4 +104,3 @@ This project is licensed under the [MIT License](LICENSE). Feel free to use, mod
     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/Screenshot%202023-09-18%20042013.png" alt="Screenshot 18">
   </div>
 </div>
-

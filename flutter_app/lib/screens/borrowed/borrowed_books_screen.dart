@@ -16,8 +16,10 @@ class BorrowedBooksScreen extends ConsumerStatefulWidget {
 class _BorrowedScreenState extends ConsumerState<BorrowedBooksScreen> {
   @override
   void initState() {
-    ref.refresh(borrowedBookDataProvider);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(borrowedBookDataProvider);
+    });
   }
 
   @override

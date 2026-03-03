@@ -1,9 +1,8 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/authentication/views/login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../providers/user_provider.dart';
 
@@ -16,7 +15,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
-  File? _image;
+  Uint8List? _imageBytes;
   XFile? pickedFile;
   final picker = ImagePicker();
 
@@ -50,11 +49,11 @@ class _SignUpState extends State<SignUp> {
                           return CircleAvatar(
                             radius: 50.0,
                             child: GestureDetector(
-                              child: _image != null
+                              child: _imageBytes != null
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(50.0),
-                                      child: Image.file(
-                                        _image!,
+                                      child: Image.memory(
+                                        _imageBytes!,
                                         fit: BoxFit.cover,
                                         width: 100,
                                         height: 100,
@@ -63,17 +62,21 @@ class _SignUpState extends State<SignUp> {
                                   : const Icon(Icons.camera_enhance_outlined),
                               onTap: () async {
                                 pickedFile = await picker.pickImage(
-                                    source: ImageSource.gallery);
+                                  source: ImageSource.gallery,
+                                );
+                                if (pickedFile == null) {
+                                  return;
+                                }
+
+                                final bytes = await pickedFile!.readAsBytes();
                                 setState(() {
-                                  _image = File(pickedFile!.path);
+                                  _imageBytes = bytes;
                                 });
 
-                                if (pickedFile != null) {
-                                  final photo = File(pickedFile!.path);
-                                  ref
-                                      .read(userControllerProvider.notifier)
-                                      .setPhoto(photo);
-                                }
+                                ref.read(userControllerProvider.notifier).setPhoto(
+                                      bytes,
+                                      pickedFile!.name,
+                                    );
                               },
                             ),
                           );
@@ -135,6 +138,7 @@ class _SignUpState extends State<SignUp> {
                                       if (value == null || value.isEmpty) {
                                         return "User name must not be empty";
                                       }
+                                      return null;
                                     },
                                   );
                                 },
@@ -194,6 +198,7 @@ class _SignUpState extends State<SignUp> {
                                     if (value == null || value.isEmpty) {
                                       return "First name must not be empty";
                                     }
+                                    return null;
                                   },
                                 );
                               },
@@ -257,6 +262,7 @@ class _SignUpState extends State<SignUp> {
                                         if (value == null || value.isEmpty) {
                                           return "Last name must not be empty";
                                         }
+                                        return null;
                                       },
                                     );
                                   },
@@ -317,6 +323,7 @@ class _SignUpState extends State<SignUp> {
                                     if (value == null || value.isEmpty) {
                                       return "Email must not be empty";
                                     }
+                                    return null;
                                   },
                                 );
                               },
@@ -377,6 +384,7 @@ class _SignUpState extends State<SignUp> {
                                       if (value == null || value.isEmpty) {
                                         return "Password must not be empty";
                                       }
+                                      return null;
                                     },
                                   );
                                 },

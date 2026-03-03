@@ -1,5 +1,5 @@
 import 'book.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 class User {
   // Create user's constructor
@@ -11,7 +11,8 @@ class User {
     this.password = '',
     this.imageUrl = '',
     this.favoriteBooks,
-    this.profileImage,
+    this.profileImageBytes,
+    this.profileImageName,
   });
 
   String firstName;
@@ -21,7 +22,8 @@ class User {
   String password;
   String imageUrl;
   List<Book>? favoriteBooks;
-  File? profileImage;
+  Uint8List? profileImageBytes;
+  String? profileImageName;
 
   User copyWith({
     String? username,
@@ -29,7 +31,8 @@ class User {
     String? lastName,
     String? email,
     String? password,
-    File? profileImage,
+    Uint8List? profileImageBytes,
+    String? profileImageName,
   }) {
     return User(
       username: username ?? this.username,
@@ -37,7 +40,8 @@ class User {
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       password: password ?? this.password,
-      profileImage: profileImage ?? this.profileImage,
+      profileImageBytes: profileImageBytes ?? this.profileImageBytes,
+      profileImageName: profileImageName ?? this.profileImageName,
     );
   }
 

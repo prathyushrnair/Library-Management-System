@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 import '../../utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,8 +32,11 @@ class UserController extends StateNotifier<User> {
     state = state.copyWith(password: password);
   }
 
-  void setPhoto(File profileImage) {
-    state = state.copyWith(profileImage: profileImage);
+  void setPhoto(Uint8List profileImageBytes, String profileImageName) {
+    state = state.copyWith(
+      profileImageBytes: profileImageBytes,
+      profileImageName: profileImageName,
+    );
   }
 
   Future<void> createUser() async {
@@ -45,10 +48,14 @@ class UserController extends StateNotifier<User> {
     request.fields['email'] = state.email;
     request.fields['password'] = state.password;
 
-    final profileImage = state.profileImage;
-    if (profileImage != null) {
-      final file =
-          await http.MultipartFile.fromPath('profile_image', profileImage.path);
+    final profileImageBytes = state.profileImageBytes;
+    final profileImageName = state.profileImageName;
+    if (profileImageBytes != null && profileImageName != null) {
+      final file = http.MultipartFile.fromBytes(
+        'profile_image',
+        profileImageBytes,
+        filename: profileImageName,
+      );
       request.files.add(file);
     }
 

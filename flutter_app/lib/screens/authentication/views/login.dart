@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/App/app.dart';
+import 'package:flutter_app/screens/authentication/views/signup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/user_provider.dart';
@@ -92,6 +92,7 @@ class _LoginState extends State<Login> {
                                       if (value == null || value.isEmpty) {
                                         return "User name must not be empty";
                                       }
+                                      return null;
                                     },
                                   );
                                 },
@@ -153,6 +154,7 @@ class _LoginState extends State<Login> {
                                       if (value == null || value.isEmpty) {
                                         return "Password must not be empty";
                                       }
+                                      return null;
                                     },
                                   );
                                 },
@@ -188,7 +190,7 @@ class _LoginState extends State<Login> {
                                         .authenticateUser()
                                         .then((value) {
                                       if (value) {
-                                        ref.refresh(userDataProvider);
+                                        ref.invalidate(userDataProvider);
                                         Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
                                             builder: (BuildContext context) =>
@@ -240,7 +242,11 @@ class _LoginState extends State<Login> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.logout_outlined),
           onPressed: () {
-            GoRouter.of(context).go('/signUp');
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (BuildContext context) => const SignUp(),
+              ),
+            );
           },
         ),
       ),

@@ -36,7 +36,7 @@ class APIEndpoints(APIView):
             },
             reverse('user_profile'): {
                 'description': 'View user profile information.',
-                'access_level': 'Superuser',  # Requires superuser access
+                'access_level': 'Authenticated user',  # Requires authentication
             },
             reverse('register'): {
                 'description': 'Register a new user account.',
@@ -245,6 +245,7 @@ class ToggleFavoriteView(APIView):
 
  
 class FavoritedBooksList(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         # get the user's object
         user = get_object_or_404(CustomUser, id=request.user.id)
@@ -282,4 +283,3 @@ class BorrowBookView(APIView):
                 return Response({'message': 'Book out of stock.'}, status=status.HTTP_400_BAD_REQUEST)
         except Book.DoesNotExist:
             return Response({'message': 'Book not found.'}, status=status.HTTP_404_NOT_FOUND)
-

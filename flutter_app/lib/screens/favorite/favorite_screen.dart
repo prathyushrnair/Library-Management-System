@@ -17,8 +17,10 @@ class FavoriteScreen extends ConsumerStatefulWidget {
 class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
   @override
   void initState() {
-    ref.refresh(favoriteBookDataProvider);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(favoriteBookDataProvider);
+    });
   }
 
   @override
@@ -71,7 +73,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                                       .then(
                                     (value) {
                                       // showAlertDialog(context, value);
-                                      ref.refresh(favoriteBookDataProvider);
+                                      ref.invalidate(favoriteBookDataProvider);
                                     },
                                   );
                                 },
