@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import '../../utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,58 +40,110 @@ class UserController extends StateNotifier<User> {
     );
   }
 
-  Future<void> createUser() async {
-    final request =
-        http.MultipartRequest('POST', Uri.parse('${baseUrl}register/'));
-    request.fields['user_name'] = state.username;
-    request.fields['first_name'] = state.firstName;
-    request.fields['last_name'] = state.lastName;
-    request.fields['email'] = state.email;
-    request.fields['password'] = state.password;
+  Future<String?> createUser() async {
+    try {
+      final request =
+          http.MultipartRequest('POST', Uri.parse('${baseUrl}register/'));
+      request.fields['user_name'] = state.username;
+      request.fields['first_name'] = state.firstName;
+      request.fields['last_name'] = state.lastName;
+      request.fields['email'] = state.email;
+      request.fields['password'] = state.password;
 
-    final profileImageBytes = state.profileImageBytes;
-    final profileImageName = state.profileImageName;
-    if (profileImageBytes != null && profileImageName != null) {
-      final file = http.MultipartFile.fromBytes(
-        'profile_image',
-        profileImageBytes,
-        filename: profileImageName,
-      );
-      request.files.add(file);
-    }
+      final profileImageBytes = state.profileImageBytes;
+      final profileImageName = state.profileImageName;
+      if (profileImageBytes != null && profileImageName != null) {
+        final file = http.MultipartFile.fromBytes(
+          'profile_image',
+          profileImageBytes,
+          filename: profileImageName,
+        );
+        request.files.add(file);
+      }
 
-    final response = await request.send();
-    print(response.statusCode);
-    if (response.statusCode == 201) {
-      print('User created successfully');
-    } else {
-      print('Error creating user: ${response.reasonPhrase}');
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 201) {
+        return null;
+      }
+
+      if (response.statusCode == 400) {
+        try {
+          final data = jsonDecode(responseBody) as Map<String, dynamic>;
+          if (data.containsKey('user_name')) {
+            return (data['user_name'] as List).first.toString();
+          }
+          if (data.containsKey('email')) {
+            return (data['email'] as List).first.toString();
+          }
+          final firstKey = data.keys.isNotEmpty ? data.keys.first : null;
+          if (firstKey != null &&
+              data[firstKey] is List &&
+              (data[firstKey] as List).isNotEmpty) {
+            return data[firstKey][0].toString();
+          }
+          if (data.containsKey('detail')) {
+            return data['detail'].toString();
+          }
+        } catch (_) {}
+        return 'Invalid signup details. Please review your input.';
+      }
+
+      String details = '';
+      try {
+        final data = jsonDecode(responseBody);
+        if (data is Map<String, dynamic> && data['detail'] != null) {
+          details = data['detail'].toString();
+        }
+      } catch (_) {}
+      if (details.isEmpty) {
+        details = 'HTTP ${response.statusCode}';
+      }
+      return 'Sign up failed. $details';
+    } on SocketException {
+      return 'Cannot connect to server. Make sure backend is running on $baseUrl';
+    } catch (_) {
+      return 'Unexpected signup error. Please try again.';
     }
   }
 
-  Future<bool> authenticateUser() async {
-    // Check if the Token is already in the user device before going to the server side
+  Future<String?> authenticateUser() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('access')) {
-      return true; // the user has already the token key in his device in this case.
-    } else {
-      final response = await http.post(
-        Uri.parse('${baseUrl}api/token/'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-            {'user_name': state.username, 'password': state.password}),
-      );
+    // Always clear any stale tokens before a fresh login attempt.
+    await prefs.remove('access');
+    await prefs.remove('refresh');
 
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        // Save the user token locally in the users device
-        prefs.setString('access', body['access']);
-        prefs.setString('refresh', body['refresh']);
-        return true;
-      } else {
-        return false; // the user inputs an invalid input as his credentials in this case
-      }
+    final response = await http.post(
+      Uri.parse('${baseUrl}api/token/'),
+      headers: {'Content-Type': 'application/json'},
+      body:
+          jsonEncode({'user_name': state.username, 'password': state.password}),
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      // Save the user token locally in the users device.
+      prefs.setString('access', body['access']);
+      prefs.setString('refresh', body['refresh']);
+      return null;
     }
+
+    if (response.statusCode == 401) {
+      await prefs.remove('access');
+      await prefs.remove('refresh');
+      return 'Incorrect username or password.';
+    }
+
+    await prefs.remove('access');
+    await prefs.remove('refresh');
+    return 'Unable to log in. Please try again.';
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access');
+    await prefs.remove('refresh');
   }
 }
 

@@ -6,15 +6,24 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/user_provider.dart';
 
-class Login extends StatefulWidget {
+class Login extends ConsumerStatefulWidget {
   const Login({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  ConsumerState<Login> createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends ConsumerState<Login> {
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure login screen always starts in a logged-out state.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userControllerProvider.notifier).logout();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,24 +192,31 @@ class _LoginState extends State<Login> {
                           Consumer(
                             builder: (context, ref, child) {
                               return TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    ref
+                                    final navigator = Navigator.of(context);
+                                    final messenger =
+                                        ScaffoldMessenger.of(context);
+                                    final errorMessage = await ref
                                         .read(userControllerProvider.notifier)
-                                        .authenticateUser()
-                                        .then((value) {
-                                      if (value) {
-                                        ref.invalidate(userDataProvider);
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                App(),
-                                          ),
+                                        .authenticateUser();
+                                    if (errorMessage == null) {
+                                      ref.invalidate(userDataProvider);
+                                      if (!mounted) return;
+                                      navigator.pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              App(),
+                                        ),
+                                      );
+                                    } else {
+                                      if (!mounted) return;
+                                      messenger
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                          SnackBar(content: Text(errorMessage)),
                                         );
-                                      } else {
-                                        // show error alert dialoge to the user!
-                                      }
-                                    });
+                                    }
                                   }
                                 },
                                 child: Container(
@@ -230,6 +246,24 @@ class _LoginState extends State<Login> {
                               );
                             },
                           ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Don't have an account? "),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const SignUp(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Sign Up'),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -238,16 +272,6 @@ class _LoginState extends State<Login> {
               ],
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.logout_outlined),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (BuildContext context) => const SignUp(),
-              ),
-            );
-          },
         ),
       ),
     );

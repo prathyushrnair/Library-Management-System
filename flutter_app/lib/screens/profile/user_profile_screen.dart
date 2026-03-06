@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/authentication/views/login.dart';
-import 'package:flutter_app/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter_app/screens/providers/page_number_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'widgets/profiler_viewer.dart';
@@ -52,7 +51,11 @@ class UserProfile extends ConsumerWidget {
                             Tooltip(
                               message: "LogOut",
                               child: InkWell(
-                                onTap: () {
+                                onTap: () async {
+                                  await ref
+                                      .read(userControllerProvider.notifier)
+                                      .logout();
+                                  if (!context.mounted) return;
                                   ref
                                       .read(pageNumberProvider.notifier)
                                       .setPage(0);

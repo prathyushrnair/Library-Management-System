@@ -61,7 +61,41 @@ To get up and running with our library management system, follow these steps:
    python manage.py runserver
    ```
 
-4. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
+### MySQL Setup (Backend)
+
+The backend now supports MySQL and includes a database log table (`library_app_applog`) to store request logs.
+
+1. Install Python dependencies:
+
+   ```bash
+   pip install -r django_backend/requirements.txt
+   ```
+
+2. Create a MySQL database:
+
+   ```sql
+   CREATE DATABASE library_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+3. Set environment variables before starting Django:
+
+   ```bash
+   export DB_ENGINE=mysql
+   export MYSQL_DATABASE=library_management
+   export MYSQL_USER=root
+   export MYSQL_PASSWORD=your_password
+   export MYSQL_HOST=127.0.0.1
+   export MYSQL_PORT=3306
+   ```
+
+4. Run migrations (creates users/auth/library/log tables):
+
+   ```bash
+   cd django_backend/library_project
+   python manage.py migrate
+   ```
+
+5. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
 
    ```bash
    flutter run -d chrome

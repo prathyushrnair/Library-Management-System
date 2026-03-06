@@ -1,10 +1,5 @@
-from django.db import models
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,BaseUserManager, PermissionsMixin
-from django.contrib.auth.hashers import make_password,check_password
-
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.contrib.auth.hashers import make_password, check_password
 from django.db import models
 
 # Custom User Manager
@@ -87,3 +82,26 @@ class Borrow(models.Model):
     def __str__(self) -> str:
         return self.book.title
 
+
+class AppLog(models.Model):
+    LOG_LEVELS = [
+        ('INFO', 'INFO'),
+        ('WARNING', 'WARNING'),
+        ('ERROR', 'ERROR'),
+    ]
+
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    level = models.CharField(max_length=10, choices=LOG_LEVELS, default='INFO')
+    event = models.CharField(max_length=100)
+    message = models.TextField()
+    path = models.CharField(max_length=255, blank=True)
+    method = models.CharField(max_length=10, blank=True)
+    status_code = models.PositiveSmallIntegerField(default=200)
+    metadata = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f'{self.level} - {self.event}'

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/onboarding/onboarding_screen.dart';
+import 'package:flutter_app/screens/authentication/views/login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Medbele Anba',
-      home: OnBoardingScreen(),
+      home: const Login(),
     );
   }
 }

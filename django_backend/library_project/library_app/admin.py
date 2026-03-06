@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser,Book,Borrow,Favorite
+from .models import AppLog, Book, Borrow, CustomUser, Favorite
 # Register your models here.
 
 class CustomUserCreationForm(UserCreationForm):
@@ -32,6 +32,15 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
     
     
+@admin.register(AppLog)
+class AppLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'level', 'status_code', 'method', 'path', 'created_at')
+    list_filter = ('level', 'status_code', 'method', 'created_at', 'user')
+    search_fields = ('message', 'path', 'event', 'user__user_name', 'user__email')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Book)
 admin.site.register(Borrow)

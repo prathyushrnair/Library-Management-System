@@ -73,7 +73,9 @@ class _SignUpState extends State<SignUp> {
                                   _imageBytes = bytes;
                                 });
 
-                                ref.read(userControllerProvider.notifier).setPhoto(
+                                ref
+                                    .read(userControllerProvider.notifier)
+                                    .setPhoto(
                                       bytes,
                                       pickedFile!.name,
                                     );
@@ -399,9 +401,72 @@ class _SignUpState extends State<SignUp> {
                               return TextButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    await ref
+                                    final navigator = Navigator.of(context);
+                                    final messenger =
+                                        ScaffoldMessenger.of(context);
+
+                                    final errorMessage = await ref
                                         .read(userControllerProvider.notifier)
                                         .createUser();
+                                    if (!mounted) return;
+
+                                    if (errorMessage == null) {
+                                      messenger
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'User created successfully. Please log in.',
+                                            ),
+                                          ),
+                                        );
+                                      navigator.pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              const Login(),
+                                        ),
+                                      );
+                                    } else {
+                                      final isDuplicateUser = errorMessage
+                                          .toLowerCase()
+                                          .contains('already exists');
+
+                                      await showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Sign Up Failed'),
+                                            content: Text(
+                                              isDuplicateUser
+                                                  ? 'Account already exists. Please log in.'
+                                                  : errorMessage,
+                                            ),
+                                            actions: [
+                                              if (isDuplicateUser)
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    navigator.pushReplacement(
+                                                      MaterialPageRoute(
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            const Login(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text('Log In'),
+                                                ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
                                   }
                                 },
                                 child: Container(
@@ -427,6 +492,24 @@ class _SignUpState extends State<SignUp> {
                               );
                             },
                           ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Already have an account? '),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const Login(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Log In'),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -435,16 +518,6 @@ class _SignUpState extends State<SignUp> {
               ],
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.login),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (BuildContext context) => const Login(),
-              ),
-            );
-          },
         ),
       ),
     );

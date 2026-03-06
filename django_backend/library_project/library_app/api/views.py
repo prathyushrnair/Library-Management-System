@@ -1,9 +1,8 @@
 from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework import status
-from library_app.models import CustomUser, Book, Favorite, Borrow
-from .serializers import UserSerializer, BorrowedBookSerializer, FavoritedBookSerializer
-from .serializers import BookSerializer
+from library_app.models import AppLog, Book, Borrow, CustomUser, Favorite
+from .serializers import AppLogSerializer, BookSerializer, BorrowedBookSerializer, FavoritedBookSerializer, UserSerializer
 from rest_framework.decorators import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
@@ -12,6 +11,7 @@ from django.db import transaction
 import datetime
 from django.db.models import Q
 from .LinkedList import Node,LinkedList
+from django.db import IntegrityError
 
 # 404 handler
 def handler404(request, exception):
@@ -42,6 +42,10 @@ class APIEndpoints(APIView):
                 'description': 'Register a new user account.',
                 'access_level': 'Public',  # No specific access level required
             },
+            reverse('logs'): {
+                'description': 'Filter logs by user, date, and status code.',
+                'access_level': 'Superuser',  # Requires superuser access
+            },
         }
         
         # Return the dictionary of URLs, descriptions, and access levels in the response
@@ -58,6 +62,27 @@ class UserList(APIView):
         serializer = UserSerializer(users, many=True)
         
         # Return the serialized data in the response
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LogList(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get(self, request):
+        logs = AppLog.objects.select_related('user').all()
+
+        user_id = request.GET.get('user')
+        date = request.GET.get('date')
+        status_code = request.GET.get('status_code')
+
+        if user_id:
+            logs = logs.filter(user_id=user_id)
+        if date:
+            logs = logs.filter(created_at__date=date)
+        if status_code:
+            logs = logs.filter(status_code=status_code)
+
+        serializer = AppLogSerializer(logs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # API view for user profile
@@ -79,29 +104,31 @@ class Register(APIView):
     def post(self, request):
         # Deserialize the request data using the UserSerializer
         serializer = UserSerializer(data=request.data)
-        
-        # Debugging prints to inspect the request data and serializer validity
-        print(request.data)
-        print(serializer.is_valid())
-        
+
         if serializer.is_valid():
-            # If the serializer data is valid, create a new CustomUser
-            user = CustomUser.objects.create_user(
-                user_name=serializer.validated_data['user_name'],
-                email=serializer.validated_data['email'],
-                password=serializer.validated_data['password'],
-                first_name=serializer.validated_data['first_name'],
-                last_name=serializer.validated_data['last_name'],
-                profile_image=serializer.validated_data['profile_image']
-            )
-            
-            # Return a success response
-            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+            try:
+                # If the serializer data is valid, create a new CustomUser
+                CustomUser.objects.create_user(
+                    user_name=serializer.validated_data['user_name'],
+                    email=serializer.validated_data['email'],
+                    password=serializer.validated_data['password'],
+                    first_name=serializer.validated_data['first_name'],
+                    last_name=serializer.validated_data['last_name'],
+                    profile_image=serializer.validated_data.get('profile_image')
+                )
+                # Return a success response
+                return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response(
+                    {'user_name': ['A user with this user name already exists.']},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            except Exception as exc:
+                return Response(
+                    {'detail': f'Registration failed: {str(exc)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
         else:
-            # Debugging prints to inspect serializer error messages and errors
-            print(serializer.error_messages)
-            print(serializer._errors)
-            
             # Return a response with serializer errors
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

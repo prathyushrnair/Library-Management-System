@@ -7,6 +7,7 @@ from .views import (
     APIEndpoints,
     Register,
     UserList,
+    LogList,
     UserProfile,
     BorrowBookView,
     BookList,
@@ -28,6 +29,7 @@ urlpatterns = [
     
     #User related Endpoints
     path('users/', UserList.as_view(), name='users'),
+    path('logs/', LogList.as_view(), name='logs'),
     path('user/profile/', UserProfile.as_view(), name='user_profile'),
     
     #Authentication Endpoints
