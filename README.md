@@ -1,161 +1,159 @@
-
 # መድብለ-አምባ Library Management System
 
-Welcome to መድብለ-አምባ, our library management system project! This project combines the power of Django for the backend and Flutter for the frontend to create an efficient library management system.
+A full-stack Library Management System with:
+- Django REST backend
+- Flutter frontend (web)
+- JWT authentication
+- Custom user model
+- Book browse/search/borrow/favorite flows
 
-## Project Folder Structure
+## Tech Stack
+- Backend: Django, Django REST Framework, SimpleJWT
+- Frontend: Flutter, Riverpod
+- Database: SQLite (default) or MySQL
 
-```markdown
-መድብለ-አምባ/
+## Project Structure
+```text
+Library-Management-System/
+├── django_backend/
+│   ├── library_project/
+│   │   ├── library_project/      # Django settings/urls
+│   │   ├── library_app/          # Models, API, migrations, commands
+│   │   ├── Media/                # Uploaded/generated images
+│   │   └── manage.py
+│   └── requirements.txt
 ├── flutter_app/
 │   ├── lib/
-│   │   ├── main.dart
-│   │   ├── ...
-│   ├── web/
-│   ├── ...
-├── django_backend/
-│   ├── library_project/ 
-│   │   ├── library_project/ (Django Project Configuration)
-│   │   │   ├── __init__.py
-│   │   │   ├── asgi.py
-│   │   │   ├── settings.py
-│   │   │   ├── urls.py
-│   │   │   ├── wsgi.py
-│   │   ├── library_app/ (Django's RestApi app for the Library)
-│   │   │   ├── __init__.py
-│   │   │   ├── admin.py
-│   │   │   ├── apps.py
-│   │   │   ├── migrations/
-│   │   │   │   ├── __init__.py
-│   │   │   ├── models.py
-│   │   │   ├── serializers.py
-│   │   │   ├── tests.py
-│   │   │   ├── views.py
-│   │   ├── media/ (User-Uploaded Media Files)
-│   │   ├── manage.py (Django Management Script)
-│   ├── requirements.txt (Python Dependency List)
+│   └── web/
+└── README.md
 ```
 
-- **`flutter_app/`**: This directory houses the source code for our Flutter web app. Explore `lib/` for app logic and `web/` for browser hosting files.
+## Prerequisites
+- Python 3.10+
+- Flutter SDK
+- Chrome browser (for Flutter web)
+- Optional: MySQL 8+
 
-- **`django_backend/`**: In this directory, you'll find the Django rest api that powers our library management system. 
+## 1) Backend Setup (Django)
+From repo root:
 
-Please note that when you browse this repository on GitHub, you'll encounter these two directories directly at the top level, without a parent folder named `መድብለ-አምባ/`. This organization is designed for simplicity.
+```bash
+cd django_backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Getting Started
+Run migrations:
 
-To get up and running with our library management system, follow these steps:
+```bash
+cd library_project
+python manage.py migrate
+```
 
-1. **Clone the Repository**: Clone this repository to your local machine using the following command:
+Start backend:
 
+```bash
+python manage.py runserver 127.0.0.1:8001
+```
+
+Backend base URL used by Flutter in this project:
+- `http://127.0.0.1:8001/`
+
+## 2) Frontend Setup (Flutter Web)
+From repo root:
+
+```bash
+cd flutter_app
+flutter clean
+flutter pub get
+flutter run -d chrome
+```
+
+## 3) Seed Books and Covers
+From `django_backend/library_project`:
+
+### Seed 100 popular books (10 per genre)
+```bash
+python manage.py seed_popular_books
+```
+
+### Generate simple local covers (recommended)
+Creates clean placeholder covers with title/author/genre so users can identify books.
+
+```bash
+python manage.py generate_simple_covers --force
+```
+
+### Optional: fetch official covers from Open Library
+Requires internet access.
+
+```bash
+python manage.py fetch_official_covers --force
+```
+
+## 4) MySQL Setup (Optional)
+By default, project uses SQLite. To use MySQL:
+
+Create DB:
+
+```sql
+CREATE DATABASE library_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Set env vars before `runserver`:
+
+```bash
+export DB_ENGINE=mysql
+export MYSQL_DATABASE=library_management
+export MYSQL_USER=root
+export MYSQL_PASSWORD=your_password
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=3306
+```
+
+Then migrate:
+
+```bash
+python manage.py migrate
+```
+
+## 5) Admin Access
+Create superuser:
+
+```bash
+python manage.py createsuperuser
+```
+
+Admin URL:
+- `http://127.0.0.1:8001/admin/`
+
+## 6) Common Issues
+
+### Signup/Login works but books are not visible
+1. Confirm backend is running on `127.0.0.1:8001`
+2. Confirm books exist:
    ```bash
-   git clone https://github.com/Abthon/Medbele-Anba.git
+   python manage.py shell -c "from library_app.models import Book; print(Book.objects.count())"
    ```
-
-2. **Set Up Your Environment**: Create a virtual environment for your Django project and activate it. Then, install the required dependencies from `requirements.txt`. For Flutter, ensure you have Flutter and Dart installed on your system.
-
-3. **Run the Django Backend**: Navigate to the `django_backend/` directory and run the following commands:
-
+3. Regenerate covers:
    ```bash
-   python manage.py migrate
-   python manage.py runserver
-   ```
-
-### MySQL Setup (Backend)
-
-The backend now supports MySQL and includes a database log table (`library_app_applog`) to store request logs.
-
-1. Install Python dependencies:
-
-   ```bash
-   pip install -r django_backend/requirements.txt
-   ```
-
-2. Create a MySQL database:
-
-   ```sql
-   CREATE DATABASE library_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
-
-3. Set environment variables before starting Django:
-
-   ```bash
-   export DB_ENGINE=mysql
-   export MYSQL_DATABASE=library_management
-   export MYSQL_USER=root
-   export MYSQL_PASSWORD=your_password
-   export MYSQL_HOST=127.0.0.1
-   export MYSQL_PORT=3306
-   ```
-
-4. Run migrations (creates users/auth/library/log tables):
-
-   ```bash
-   cd django_backend/library_project
-   python manage.py migrate
-   ```
-
-5. Seed popular books by genre (10 books per genre):
-
-   ```bash
-   cd django_backend/library_project
-   python manage.py seed_popular_books
-   ```
-
-6. Fetch official book covers (Open Library):
-
-   ```bash
-   cd django_backend/library_project
-   python manage.py fetch_official_covers --force
-   ```
-
-7. Generate simple local covers (title/author/genre) for all books:
-
-   ```bash
-   cd django_backend/library_project
    python manage.py generate_simple_covers --force
    ```
+4. Hard refresh browser (`Ctrl+Shift+R`)
 
-8. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
+### Duplicate user error on signup
+Use a different username, or log in with the existing account.
 
-   ```bash
-   flutter run -d chrome
-   ```
-<br></br>
-## Contributors
-<a href="https://github.com/Abthon/Medbele-Anba/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Abthon/Medbele-Anba" />
-</a>
+## 7) Useful Commands
+From `django_backend/library_project`:
 
-## Issues and Support
-
-If you encounter any issues or have questions about our library management system, please visit our [Issue Tracker](https://github.com/Abthon/Medbele-Anba/issues) to report problems or seek assistance.
+```bash
+python manage.py check
+python manage.py showmigrations
+python manage.py seed_popular_books
+python manage.py generate_simple_covers --force
+```
 
 ## License
-
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it as per the terms of the license.
-
-
-<div align="center">
-  <h2>Screenshots</h2>
-  <div class="screenshot-grid">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_1_2023-09-18_04-23-42.jpg" alt="Screenshot 1" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_2_2023-09-18_04-23-42.jpg" alt="Screenshot 2" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_3_2023-09-18_04-23-42.jpg" alt="Screenshot 3" width="200" height="400">
-     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_12_2023-09-18_04-23-42.jpg" alt="Screenshot 12" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_4_2023-09-18_04-23-42.jpg" alt="Screenshot 4" width="200" height="400">
-     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_9_2023-09-18_04-23-42.jpg" alt="Screenshot 9" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_5_2023-09-18_04-23-42.jpg" alt="Screenshot 5" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_6_2023-09-18_04-23-42.jpg" alt="Screenshot 6" width="200" height="400">
-     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_11_2023-09-18_04-23-42.jpg" alt="Screenshot 11" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_16_2023-09-18_04-23-42.jpg" alt="Screenshot 16" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_13_2023-09-18_04-23-42.jpg" alt="Screenshot 13" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_14_2023-09-18_04-23-42.jpg" alt="Screenshot 14" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_7_2023-09-18_04-23-42.jpg" alt="Screenshot 7" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_8_2023-09-18_04-23-42.jpg" alt="Screenshot 8" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_10_2023-09-18_04-23-42.jpg" alt="Screenshot 10" width="200" height="400">
-     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_15_2023-09-18_04-23-42.jpg" alt="Screenshot 15" width="200" height="400">
-     <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/photo_17_2023-09-18_04-23-42.jpg" alt="Screenshot 17" width="200" height="400">
-    <img src="https://github.com/Abthon/Medbele-Anba/blob/main/ScreenShots/Screenshot%202023-09-18%20042013.png" alt="Screenshot 18">
-  </div>
-</div>
+MIT License. See [LICENSE](LICENSE).
