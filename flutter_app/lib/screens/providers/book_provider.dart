@@ -28,7 +28,14 @@ class BookData {
     var token = prefs.getString('access');
     var refresh = prefs.getString('refresh');
 
-    if (JwtDecoder.isExpired(token!)) {
+    if (token == null || token.isEmpty) {
+      throw Exception('Not authenticated. Please log in again.');
+    }
+
+    if (JwtDecoder.isExpired(token)) {
+      if (refresh == null || refresh.isEmpty) {
+        throw Exception('Session expired. Please log in again.');
+      }
       final response = await http.post(
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
@@ -36,10 +43,14 @@ class BookData {
           {'refresh': '$refresh'},
         ),
       );
+      if (response.statusCode != 200) {
+        throw Exception('Session expired. Please log in again.');
+      }
       prefs.setString('access', jsonDecode(response.body)['access']);
-      prefs.setString('refresh', jsonDecode(response.body)['refresh']);
+      if (jsonDecode(response.body)['refresh'] != null) {
+        prefs.setString('refresh', jsonDecode(response.body)['refresh']);
+      }
       token = prefs.getString('access');
-      refresh = prefs.getString('refresh');
     }
 
     final response = await http.get(

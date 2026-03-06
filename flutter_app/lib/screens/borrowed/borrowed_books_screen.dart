@@ -131,7 +131,16 @@ class _BorrowedScreenState extends ConsumerState<BorrowedBooksScreen> {
                     );
                   },
                 )
-              : const Center(child: EmptyContentAnimationView()),
+              : const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      EmptyContentAnimationView(),
+                      SizedBox(height: 12),
+                      Text('No borrowed books yet.'),
+                    ],
+                  ),
+                ),
         );
       },
       error: (err, stackTrace) {

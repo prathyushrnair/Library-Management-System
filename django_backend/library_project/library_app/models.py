@@ -55,6 +55,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
+    genre = models.CharField(max_length=50, default='General')
     isbn = models.CharField(max_length=13, unique=True)
     cover_image = models.ImageField(upload_to='Images/BooksCover')
     inserted_date = models.DateTimeField(auto_now_add=True)

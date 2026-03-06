@@ -95,7 +95,28 @@ The backend now supports MySQL and includes a database log table (`library_app_a
    python manage.py migrate
    ```
 
-5. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
+5. Seed popular books by genre (10 books per genre):
+
+   ```bash
+   cd django_backend/library_project
+   python manage.py seed_popular_books
+   ```
+
+6. Fetch official book covers (Open Library):
+
+   ```bash
+   cd django_backend/library_project
+   python manage.py fetch_official_covers --force
+   ```
+
+7. Generate simple local covers (title/author/genre) for all books:
+
+   ```bash
+   cd django_backend/library_project
+   python manage.py generate_simple_covers --force
+   ```
+
+8. **Run the Flutter Web App**: Open the `flutter_app/` directory in your preferred code editor. Use the following command to launch in your browser:
 
    ```bash
    flutter run -d chrome

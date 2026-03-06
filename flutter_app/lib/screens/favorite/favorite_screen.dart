@@ -163,7 +163,16 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                     );
                   },
                 )
-              : const Center(child: EmptyContentAnimationView()),
+              : const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      EmptyContentAnimationView(),
+                      SizedBox(height: 12),
+                      Text('No favorite books yet.'),
+                    ],
+                  ),
+                ),
         );
       },
       error: (err, stackTrace) {

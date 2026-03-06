@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/home/vews/search_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../utils/constants.dart';
 import '../providers/book_provider.dart';
 import '../providers/user_provider.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -52,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "👋 Hello, ${userData['first_name']}",
+                                  '👋 Hello, ${userData['first_name']}',
                                   style: GoogleFonts.delius(
                                     fontWeight: FontWeight.bold,
                                     color: smallTextColor,
@@ -74,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             CircleAvatar(
                               radius: 26,
                               backgroundImage: hasProfileImage
-                                  ? NetworkImage("$baseUrl$profileImage")
+                                  ? NetworkImage('$baseUrl$profileImage')
                                   : null,
                               child: hasProfileImage
                                   ? null
@@ -95,10 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .searchBooks(_controller.text)
                                 .then(
                               (books) {
-                                if (books.isEmpty) {
-                                  print('book is empty');
-                                  // show the alert dialoge
-                                } else {
+                                if (books.isNotEmpty) {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -116,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         controller: _controller,
                         fillColor: Colors.white,
-                        hintText: "Search...",
+                        hintText: 'Search...',
                       )
                     ],
                   ),
@@ -124,24 +123,41 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               body: books.when(
                 data: (bookData) {
+                  if (bookData.isEmpty) {
+                    return const Center(
+                      child: Text('No books available right now.'),
+                    );
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.only(left: 15.0),
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 180.0,
-                        mainAxisSpacing: 20.0,
-                      ),
-                      physics: const BouncingScrollPhysics(),
-                      // scrollDirection: Axis.horizontal,
-                      itemCount: bookData.length,
-                      itemBuilder: (context, index) {
-                        final book = bookData[index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                          child: Text(
+                            '${bookData.length} books available',
+                            style: GoogleFonts.delius(
+                              fontWeight: FontWeight.bold,
+                              color: AppConst.kGreyLight,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 180.0,
+                              mainAxisSpacing: 20.0,
+                              mainAxisExtent: 230.0,
+                            ),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: bookData.length,
+                            itemBuilder: (context, index) {
+                              final book = bookData[index];
+                              return GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -156,31 +172,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                     left: 6.0,
                                     right: 6.0,
                                   ),
-                                  decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20.0)),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    child: Image.network(
-                                      '$baseUrl${book.cover_image}',
-                                      fit: BoxFit.cover,
-                                    ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          child: Image.network(
+                                            '$baseUrl${book.cover_image}',
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Container(
+                                                color: Colors.white,
+                                                alignment: Alignment.center,
+                                                child: const Icon(
+                                                  Icons.menu_book_rounded,
+                                                  color: AppConst.kGreyLight,
+                                                  size: 34,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        book.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.delius(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        book.author,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.delius(
+                                          color: AppConst.kGreyLight,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
                 error: (error, stackTrace) {
                   return Center(
-                    child: Text(
-                      error.toString(),
-                    ),
+                    child: Text(error.toString()),
                   );
                 },
                 loading: () {
