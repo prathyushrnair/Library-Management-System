@@ -15,14 +15,14 @@ class BookDetailPage extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Alert Dialog'),
+          title: const Text('Alert Dialog'),
           content: Text(value),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -45,7 +45,7 @@ class BookDetailPage extends ConsumerWidget {
                 // color: Colors.red,
                 image: DecorationImage(
                   image: NetworkImage(
-                    '$baseUrl${book.cover_image}',
+                    '$baseUrl${book.coverImage}',
                   ),
                   fit: BoxFit.cover,
                 ),
@@ -84,11 +84,9 @@ class BookDetailPage extends ConsumerWidget {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        ref
-                            .read(searchBooksProvider)
-                            .favoriteBook(book.id)
-                            .then(
+                        ref.read(searchBooksProvider).favoriteBook(book.id).then(
                           (value) {
+                            if (!context.mounted) return;
                             showAlertDialog(context, value);
                           },
                         );
@@ -264,7 +262,7 @@ class BookDetailPage extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    book.inserted_date.split('T')[0],
+                                    book.insertedDate.split('T')[0],
                                     style: GoogleFonts.delius(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -346,18 +344,15 @@ class BookDetailPage extends ConsumerWidget {
                       height: 50,
                       child: OutlinedButton(
                         onPressed: () async {
-                          await ref
+                          final value = await ref
                               .read(searchBooksProvider)
-                              .borrowBook(book.id)
-                              .then(
-                            (value) {
-                              if (value.contains('complete')) {
-                                ref.invalidate(bookDataProvider);
-                                ref.invalidate(borrowedBookDataProvider);
-                              }
-                              showAlertDialog(context, value);
-                            },
-                          );
+                              .borrowBook(book.id);
+                          if (!context.mounted) return;
+                          if (value.contains('complete')) {
+                            ref.invalidate(bookDataProvider);
+                            ref.invalidate(borrowedBookDataProvider);
+                          }
+                          showAlertDialog(context, value);
                         },
                         child: Text(
                           "Borrow",

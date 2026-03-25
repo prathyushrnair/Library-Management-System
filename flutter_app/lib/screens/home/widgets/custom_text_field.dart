@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../utils/constants.dart';
 
 class CustomTextField extends StatelessWidget {
-  CustomTextField({
+  const CustomTextField({
     Key? key,
     required this.keyboardType,
     required this.suffixIcon,
@@ -15,8 +15,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final Widget suffixIcon;
   final TextEditingController controller;
-  Color? fillColor;
-  String? hintText;
+  final Color? fillColor;
+  final String? hintText;
 
   @override
   Widget build(BuildContext context) {

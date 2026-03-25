@@ -40,7 +40,7 @@ class BookData {
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
-          {'refresh': '$refresh'},
+          {'refresh': refresh},
         ),
       );
       if (response.statusCode != 200) {
@@ -70,8 +70,8 @@ class BookData {
           title: data['title'],
           author: data['author'],
           quantity: data['quantity'],
-          inserted_date: data['inserted_date'],
-          cover_image: data['cover_image'],
+          insertedDate: data['inserted_date'],
+          coverImage: data['cover_image'],
         ),
       );
       return listOfBooks.toList();
@@ -90,7 +90,7 @@ class BookData {
           Uri.parse('$baseUrl/api/token/refresh/'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(
-            {'refresh': '$refresh'},
+            {'refresh': refresh},
           ),
         );
         prefs.setString('access', jsonDecode(response.body)['access']);
@@ -116,8 +116,8 @@ class BookData {
             title: data['title'],
             author: data['author'],
             quantity: data['quantity'],
-            inserted_date: data['inserted_date'],
-            cover_image: data['cover_image'],
+            insertedDate: data['inserted_date'],
+            coverImage: data['cover_image'],
           ),
         );
         return listOfBooks.toList();
@@ -138,7 +138,7 @@ class BookData {
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
-          {'refresh': '$refresh'},
+          {'refresh': refresh},
         ),
       );
       pref.setString('access', jsonDecode(response.body)['access']);
@@ -167,7 +167,7 @@ class BookData {
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
-          {'refresh': '$refresh'},
+          {'refresh': refresh},
         ),
       );
       pref.setString('access', jsonDecode(response.body)['access']);
@@ -193,8 +193,8 @@ class BookData {
               author: json['book']['author'],
               isbn: json['book']['isbn'],
               quantity: json['book']['quantity'],
-              inserted_date: json['book']['inserted_date'],
-              cover_image: json['book']['cover_image'],
+              insertedDate: json['book']['inserted_date'],
+              coverImage: json['book']['cover_image'],
             ),
           )
           .toList();
@@ -209,12 +209,11 @@ class BookData {
     var token = pref.getString('access');
     var refresh = pref.getString('refresh');
     if (JwtDecoder.isExpired(token!)) {
-      print("updating");
       final response = await http.post(
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
-          {'refresh': '$refresh'},
+          {'refresh': refresh},
         ),
       );
       pref.setString('access', jsonDecode(response.body)['access']);
@@ -240,8 +239,8 @@ class BookData {
               author: json['book']['author'],
               isbn: json['book']['isbn'],
               quantity: json['book']['quantity'],
-              inserted_date: json['book']['inserted_date'],
-              cover_image: json['book']['cover_image'],
+              insertedDate: json['book']['inserted_date'],
+              coverImage: json['book']['cover_image'],
             ),
           )
           .toList();
@@ -260,7 +259,7 @@ class BookData {
         Uri.parse('$baseUrl/api/token/refresh/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
-          {'refresh': '$refresh'},
+          {'refresh': refresh},
         ),
       );
       pref.setString('access', jsonDecode(response.body)['access']);

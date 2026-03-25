@@ -29,7 +29,7 @@ class _BorrowedScreenState extends ConsumerState<BorrowedBooksScreen> {
       data: (books) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0xffA39F9F).withOpacity(0.7),
+            backgroundColor: const Color(0xffA39F9F).withValues(alpha: 0.7),
             title: Text(
               'Borrowed Books',
               style: GoogleFonts.delius(
@@ -66,7 +66,7 @@ class _BorrowedScreenState extends ConsumerState<BorrowedBooksScreen> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12.0),
                                 child: Image.network(
-                                  '$baseUrl${book.cover_image}',
+                                  '$baseUrl${book.coverImage}',
                                   width: 80,
                                   height: 120,
                                   fit: BoxFit.cover,
@@ -111,7 +111,7 @@ class _BorrowedScreenState extends ConsumerState<BorrowedBooksScreen> {
                                         book.isbn,
                                         style: GoogleFonts.delius(
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xff80978A),
+                                          color: const Color(0xff80978A),
                                         ),
                                       )
                                     ],

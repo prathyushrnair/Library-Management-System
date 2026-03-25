@@ -5,9 +5,9 @@ class Book {
     required this.isbn,
     required this.title,
     required this.author,
-    required this.cover_image,
+    required this.coverImage,
     required this.quantity,
-    required this.inserted_date,
+    required this.insertedDate,
   });
 
   int id;
@@ -15,8 +15,8 @@ class Book {
   String isbn;
   String title;
   String author;
-  String inserted_date;
-  String cover_image;
+  String insertedDate;
+  String coverImage;
 
   // Create book's factory constructor
   factory Book.fromJson(Map<String, dynamic> json) {
@@ -26,8 +26,8 @@ class Book {
       title: json['title'] as String,
       author: json['author'] as String,
       quantity: json['quantity'] as int,
-      inserted_date: json['inserted_date'] as String,
-      cover_image: json['cover_image'] as String,
+      insertedDate: json['inserted_date'] as String,
+      coverImage: json['cover_image'] as String,
     );
   }
 
@@ -39,8 +39,8 @@ class Book {
       'title': title,
       'author': author,
       'quantity': quantity,
-      'inserted_date': inserted_date,
-      'cover_image': cover_image,
+      'inserted_date': insertedDate,
+      'cover_image': coverImage,
     };
   }
 }

@@ -5,7 +5,7 @@ import 'widgets/get_started_button.dart';
 import 'views/first_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
-  OnBoardingScreen({super.key});
+  const OnBoardingScreen({super.key});
 
   @override
   State<OnBoardingScreen> createState() => _OnBoardingScreenState();
@@ -61,9 +61,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     );
                   }),
             ),
-            SizedBox(
+            const SizedBox(
               height: 120,
-              child: const GetStartedButton(),
+              child: GetStartedButton(),
             ),
           ],
         ),

@@ -92,21 +92,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         keyboardType: TextInputType.text,
                         suffixIcon: GestureDetector(
                           onTap: () async {
-                            await ref
+                            final searchResult = await ref
                                 .read(searchBooksProvider)
-                                .searchBooks(_controller.text)
-                                .then(
-                              (books) {
-                                if (books.isNotEmpty) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SearchResultsPage(books: books),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                                .searchBooks(_controller.text);
+                            if (!context.mounted) return;
+                            if (searchResult.isNotEmpty) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      SearchResultsPage(books: searchResult),
+                                ),
+                              );
+                            }
                           },
                           child: const Icon(
                             Icons.search,
@@ -181,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderRadius:
                                               BorderRadius.circular(20.0),
                                           child: Image.network(
-                                            '$baseUrl${book.cover_image}',
+                                            '$baseUrl${book.coverImage}',
                                             fit: BoxFit.cover,
                                             width: double.infinity,
                                             errorBuilder:

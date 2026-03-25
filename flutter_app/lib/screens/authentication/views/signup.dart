@@ -401,14 +401,14 @@ class _SignUpState extends State<SignUp> {
                               return TextButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    final navigator = Navigator.of(context);
-                                    final messenger =
-                                        ScaffoldMessenger.of(context);
-
                                     final errorMessage = await ref
                                         .read(userControllerProvider.notifier)
                                         .createUser();
-                                    if (!mounted) return;
+                                    if (!context.mounted) return;
+
+                                    final navigator = Navigator.of(context);
+                                    final messenger =
+                                        ScaffoldMessenger.of(context);
 
                                     if (errorMessage == null) {
                                       messenger

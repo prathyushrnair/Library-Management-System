@@ -14,7 +14,7 @@ class App extends ConsumerWidget {
     const HomeScreen(),
     const BorrowedBooksScreen(),
     const FavoriteScreen(),
-    UserProfile()
+    const UserProfile()
   ];
 
   @override

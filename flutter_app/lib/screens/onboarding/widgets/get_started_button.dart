@@ -7,7 +7,7 @@ class GetStartedButton extends StatefulWidget {
   const GetStartedButton({super.key});
 
   @override
-  _GetStartedButtonState createState() => _GetStartedButtonState();
+  State<GetStartedButton> createState() => _GetStartedButtonState();
 }
 
 class _GetStartedButtonState extends State<GetStartedButton> {

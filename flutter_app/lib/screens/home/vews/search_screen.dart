@@ -5,9 +5,9 @@ import 'package:flutter_app/utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SearchResultsPage extends StatelessWidget {
-  List<Book> books;
+  final List<Book> books;
 
-  SearchResultsPage({Key? key, required this.books}) : super(key: key);
+  const SearchResultsPage({Key? key, required this.books}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class SearchResultsPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
                       child: Image.network(
-                        '$baseUrl${book.cover_image}',
+                        '$baseUrl${book.coverImage}',
                         width: 80,
                         height: 120,
                         fit: BoxFit.cover,
@@ -90,7 +90,7 @@ class SearchResultsPage extends StatelessWidget {
                               book.isbn,
                               style: GoogleFonts.delius(
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xff80978A),
+                                color: const Color(0xff80978A),
                               ),
                             )
                           ],

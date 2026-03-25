@@ -30,7 +30,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
       data: (books) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0xffA39F9F).withOpacity(0.7),
+            backgroundColor: const Color(0xffA39F9F).withValues(alpha: 0.7),
             title: Text(
               'Favorite Books',
               style: GoogleFonts.delius(
@@ -58,7 +58,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                         },
                         child: Slidable(
                           endActionPane: ActionPane(
-                            motion: ScrollMotion(),
+                            motion: const ScrollMotion(),
                             children: [
                               const SizedBox(
                                 width: 5.0,
@@ -97,7 +97,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12.0),
                                   child: Image.network(
-                                    '$baseUrl${book.cover_image}',
+                                    '$baseUrl${book.coverImage}',
                                     width: 80,
                                     height: 120,
                                     fit: BoxFit.cover,
@@ -142,7 +142,7 @@ class _FavoriteScreenState extends ConsumerState<FavoriteScreen> {
                                           book.isbn,
                                           style: GoogleFonts.delius(
                                             fontWeight: FontWeight.bold,
-                                            color: Color(0xff80978A),
+                                            color: const Color(0xff80978A),
                                           ),
                                         )
                                       ],

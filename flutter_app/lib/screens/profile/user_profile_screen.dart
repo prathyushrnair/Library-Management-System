@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final tabIndexProvider = StateProvider<int>((ref) => 0);
 
 class UserProfile extends ConsumerWidget {
-  UserProfile({Key? key}) : super(key: key);
+  const UserProfile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

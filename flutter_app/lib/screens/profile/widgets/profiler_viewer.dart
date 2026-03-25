@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class ViewProfile extends StatelessWidget {
   const ViewProfile({Key? key, required this.user}) : super(key: key);
 
-  final user;
+  final Map<String, dynamic> user;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,7 +13,7 @@ class ViewProfile extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(
-          color: Colors.grey.shade400.withOpacity(0.4),
+          color: Colors.grey.shade400.withValues(alpha: 0.4),
           width: 1.0,
         ),
       ),
