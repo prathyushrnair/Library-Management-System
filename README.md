@@ -1,4 +1,4 @@
-# መድብለ-አምባ Library Management System
+Library Management System
 
 A full-stack library app with:
 - Django REST API backend
